@@ -9,8 +9,6 @@ from dynect.DynectDNS import DynectRest
 from pprint import PrettyPrinter
 
 # TODO Break ouf of two additional loops for the DR verification block
-# TODO add " to the are you sure present the option selected to question"
-# TODO remove 300 from the log entry
 # TODO where it says saving back up file, add file name and path
 
 zone_list = []
@@ -57,7 +55,8 @@ elif len(args) == 1:
         answer = input("Change DNS A records: \n")
         if answer == "1":
             while True:
-                res = input("are you sure? (y / n)")
+                res = input("You have chosen to change all 'A' records to maintenance.\n"
+                            "Are you sure? (y / n)")
                 if res == "y":
                     dns_change_file = "PRODchanges.txt"
                     break
@@ -68,7 +67,8 @@ elif len(args) == 1:
             break
         elif answer == "2":
             while True:
-                res = input("are you sure? (y / n)")
+                res = input("You have chosen to change all 'A' records to production.\n"
+                            "are you sure? (y / n)")
                 if res == "y":
                     dns_change_file = "MAINTchanges.txt"
                     break
@@ -80,15 +80,16 @@ elif len(args) == 1:
         elif answer == "3":
             dns_change_file = "DRchanges.txt"
             while True:
-                res = input("are you sure? (y / n)")
+                res = input("!!You have chosen to change all 'A' records to DR!!\n"
+                            "Are you sure? (y / n)")
                 if res == "y":
                     while True:
                         res = input("!!ARE YOU ABSOLUTELY SURE THIS WILL REDIRECT ALL TRAFFIC TO DR!! (y / n)")
                         if res == "y":
-                            dns_change_file = "MAINTchanges.txt"
+                            dns_change_file = "DRchanges.txt"
                             break
                         elif res == "n":
-                            break
+                            exit(0)
                         else:
                             continue
                 elif res == "n":
@@ -251,7 +252,7 @@ while True:
         file_time = current_time + "_" + "dnschangesBACKUP.txt"
         with open(file_time, 'w') as f:
             f.write("TTL=" + str(before_dict[random.choice(list(before_dict.keys()))][1]) + "\n")
-        with open("dns.log", 'a') as logf:
+        with open("dns.log", 'a') as logf:  #  write to log file
             logf.write("\n")
             logf.write("change committed on " + current_time + "\n")
             logf.write("TTL=" + str(before_dict[random.choice(list(before_dict.keys()))][1]) + "\n")
@@ -259,7 +260,7 @@ while True:
             with open(file_time, 'a') as f:
                 f.write(str(backup_domain) + " " + str(before_dict[backup_domain][0]) + "\n")
             with open("dns.log", 'a') as logf:
-                logf.write(str(backup_domain) + " " + str(domain_list[backup_domain][0]) + " " + str(before_dict[backup_domain][1]) + "\n")
+                logf.write(str(backup_domain) + " " + str(domain_list[backup_domain][0]) + "\n")
         for zone_item in set(zone_list):
             arguments = {'publish': 'true'}
             URI = '/Zone/' + zone_item
